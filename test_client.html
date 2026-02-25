@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Game Simulation Visualizer</title>
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: #eee; }
+        #log { height: 400px; overflow-y: scroll; background: #000; padding: 10px; border: 1px solid #444; }
+        .attack { color: #ff5555; }
+        .loot { color: #55ff55; font-weight: bold; }
+        .levelup { color: #ffff55; font-size: 1.2em; }
+        .exp { color: #5555ff; }
+    </style>
+</head>
+<body>
+    <h1>Game Events</h1>
+    <div id="log"></div>
+    <script>
+        const log = document.getElementById('log');
+        const ws = new WebSocket('ws://localhost:8080/ws');
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            const div = document.createElement('div');
+            div.className = data.type;
+            div.textContent = `[${data.type.toUpperCase()}] ${data.message}`;
+            log.appendChild(div);
+            log.scrollTop = log.scrollHeight;
+            console.log(data);
+        };
+
+        ws.onopen = () => {
+            const div = document.createElement('div');
+            div.textContent = 'CONNECTED';
+            log.appendChild(div);
+        };
+
+        ws.onclose = () => {
+            const div = document.createElement('div');
+            div.textContent = 'DISCONNECTED';
+            log.appendChild(div);
+        };
+    </script>
+</body>
+</html>
